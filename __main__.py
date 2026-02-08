@@ -53,25 +53,20 @@ app.set_subjects_homeworks('responses/homework.json')
 print('Success update data.')
 
 subject_list = sl.subject_list
-for subject in subject_list:
-	print(f'\n\nSubject: {subject.name}\n')
-	homeworks = subject.homeworks
-	print('    Marks: \n')
-	print(f'        mark_list: {subject.marks.marks}\n')
-	print(f'        average: {subject.marks.average()}\n')
-	print(f'        desired_mark: {subject.desired_mark}\n')
-	print('    Homework: {\n')
-	for day_homework_list in homeworks:
-		day_homework = day_homework_list.homework
-		date = day_homework_list.date
-		print(f'        date - {date}: [\n')
-		for homework in day_homework:
-			print(f'            homework: \n')
-			print(f'                {homework}\n')
-		for file in day_homework_list.files:
-			print(f'            files:\n')
-			print(f'                filename: {file.filename}\n')
-			print(f'                file_link: {file.file_link}\n')
-		print('        ]\n')
-	print('    }\n')
-	
+with open('C:\\Users\\anton\\Documents\\Main\\Школьное\\Homework.md', 'w', encoding='utf-8') as f:
+	for subject in subject_list:
+		f.write(f'\n\n - {subject.name}\n')
+		homeworks = subject.homeworks
+		f.write(f'     - Mark List: {subject.marks.marks}\n')
+		f.write(f'     - Average: {subject.marks.average()}\n')
+		f.write(f'     - Desired Mark: {subject.desired_mark}\n')
+		f.write('     - Homeworks\n')
+		for day_homework_list in homeworks:
+			day_homework = day_homework_list.homework
+			date = day_homework_list.date
+			f.write(f'         - [ ] {date}\n')
+			for homework in day_homework:
+				f.write(f'             - [ ] {homework}\n')
+			for file in day_homework_list.files:
+				f.write(f'                 - [{file.filename}]({file.file_link})\n')
+				
