@@ -2,7 +2,14 @@ import requests
 
 
 class EljurParser:
-	def __init__(self, login: str, password: str, devkey: str, school_class: str, vendor: str) -> None:
+	def __init__(
+		self, 
+		login: str, 
+		password: str, 
+		devkey: str, 
+		school_class: str, 
+		vendor: str
+	) -> None:
 		self.login = login
 		self.password = password
 		self.devkey = devkey
@@ -58,7 +65,12 @@ class EljurParser:
 		return json_response
 		
 	
-	def get_schedule(self, from_date: str, to_date: str, rings: bool = False) -> dict:
+	def get_schedule(
+		self, 
+		from_date: str, 
+		to_date: str, 
+		rings: bool = False
+	) -> dict:
 		# data format: yyyymmdd
 		schedule_link = f'{self.base_url}/getschedule'
 		days = f'{from_date}-{to_date}'
@@ -143,7 +155,12 @@ class EljurParser:
 		return json_response
 	
 	
-	def get_diary(self, from_date: str, to_date: str, rings: bool = False) -> dict:
+	def get_diary(
+		self, 
+		from_date: str, 
+		to_date: str, 
+		rings: bool = False
+	) -> dict:
 		# data format: yyyymmdd
 		diary_link = f'{self.base_url}/getdiary'
 		days = f'{from_date}-{to_date}'

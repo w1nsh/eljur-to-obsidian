@@ -7,19 +7,19 @@ from src.school.homework import Homework, HomeworkFile
 
 class App:
 	def __init__(
-			self,
-			json_parser: JsonParser,
-			subject_list: SubjectList,
-			) -> None:
+		self,
+		json_parser: JsonParser,
+		subject_list: SubjectList,
+	) -> None:
 		self.json_parser = json_parser
 		self.subject_list = subject_list
 
 
 	def set_subject_list(
-			self, 
-			json_name: str, 
-			user_id: str | None = None
-		) -> None:
+		self, 
+		json_name: str, 
+		user_id: str | None = None
+	) -> None:
 		subject_list = self.json_parser.get_subject_list(json_name, user_id)
 		for subject in subject_list:
 			subject_obj = Subject(subject, 5)
@@ -27,10 +27,10 @@ class App:
 
 
 	def set_subjects_marks(
-			self,
-			json_name: str,
-			user_id: str | None = None
-		) -> None:
+		self,
+		json_name: str,
+		user_id: str | None = None
+	) -> None:
 		lessons_marks = self.json_parser.parse_marks(json_name, user_id)
 		subject_list = self.subject_list.subject_list
 		for subject in subject_list:
@@ -40,13 +40,15 @@ class App:
 
 
 	def set_subjects_homeworks(
-			self,
-			json_name: str,
+		self,
+		json_name: str,
 	) -> None:
 		dict_homeworks = self.json_parser.parse_homework(json_name)
 		subjects = self.subject_list.subject_list
 		for subject in subjects:
 			subject_name = subject.name
+			if subject_name not in dict_homeworks.keys():
+				continue
 			dates = dict_homeworks[subject_name]
 			for date, data in dates.items():
 				homework_obj = Homework(date)

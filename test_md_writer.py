@@ -8,6 +8,8 @@ from src.school.subject_list import SubjectList
 from src.school.subject import Subject
 from src.app import App
 from src.utils.date import Date
+from src.md.md_writer import MdWriter
+from src.md.md_parser import MdParser
 
 
 load_dotenv(dotenv_path='config/.env')
@@ -23,12 +25,19 @@ jp = JsonParser()
 sl = SubjectList()
 app = App(jp, sl)
 d = Date()
+mdw = MdWriter('C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md', 'utf-8', 4, 2)
+# mdp = MdParser(
+	# "C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md", 
+	# 'utf-8',
+	# 4,
+	# 2,
+# )
 
 raw_mark_from_date = '12.01.2026'
-raw_mark_to_date = '10.02.2026'
+raw_mark_to_date = '23.02.2026'
 
-raw_homework_from_date = '10.02.2026'
-raw_homework_to_date = '10.02.2026'
+raw_homework_from_date = '24.02.2026'
+raw_homework_to_date = '24.02.2026'
 
 mark_from_date = d.convert_date_to_json_format(raw_mark_from_date)
 mark_to_date = d.convert_date_to_json_format(raw_mark_to_date)
@@ -59,28 +68,15 @@ app.set_subjects_homeworks('responses/homework.json')
 print('Success update data.')
 
 subject_list = sl.subject_list
-with open('C:\\Users\\anton\\Documents\\Main\\Школьное\\Homework.md', 'w', encoding='utf-8') as f:
-	for subject in subject_list:
-		f.write(f'\n\n - {subject.name}\n')
-		homeworks = subject.homeworks
-		f.write(f'     - Mark List: {subject.marks.marks}\n')
-		f.write(f'     - Average: {subject.marks.average()}\n')
-		f.write(f'     - Desired Mark: {subject.desired_mark}\n')
-		f.write('         - Count concrete marks for desired:\n')
-		f.write(f'             - 5: {subject.marks.count_concrete_marks_for_desired(5, subject.desired_mark)}\n')
-		f.write(f'             - 4: {subject.marks.count_concrete_marks_for_desired(4, subject.desired_mark)}\n')
-		f.write(f'             - 3: {subject.marks.count_concrete_marks_for_desired(3, subject.desired_mark)}\n')
-		f.write('         - Count neutral marks for current mark:\n')
-		f.write(f'             - 5: {subject.marks.count_neutral_marks_for_current_mark(5)}\n')
-		f.write(f'             - 4: {subject.marks.count_neutral_marks_for_current_mark(4)}\n')
-		f.write(f'             - 3: {subject.marks.count_neutral_marks_for_current_mark(3)}\n')
-		f.write('     - Homeworks\n')
-		for day_homework_list in homeworks:
-			day_homework = day_homework_list.homework
-			date = day_homework_list.date
-			f.write(f'         - [ ] {date}\n')
-			for homework in day_homework:
-				f.write(f'             - [ ] {homework}\n')
-			for file in day_homework_list.files:
-				f.write(f'                 - [{file.filename}]({file.file_link})\n')
-				
+with open('C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md', 'w', encoding='utf-8') as f:
+	mp = mdw.generate_subject_ast(sl)
+	md = mdw.ast_to_md(mp)
+	f.write(md)
+
+# text = mdp.read()
+# lines = mdp.split_to_lines(text)
+# mp = mdp.md_to_ast(lines)
+
+# with open('C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md', 'w', encoding='utf-8') as f:
+# 	md = mdw.ast_to_md(mp)
+# 	f.write(md)

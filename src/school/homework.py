@@ -5,7 +5,7 @@ from src.school.homework_file import HomeworkFile
 
 @dataclass
 class Homework:
-	date: str | None = None
+	date: str
 	homework: list[str] = field(default_factory=list)
 	files: list[HomeworkFile] = field(default_factory=list)
 
