@@ -45,18 +45,14 @@ class MdParser:
 			line_is_point = self._is_point(line)
 			if not line_is_point:
 				format_line = '\n'
-				print(1)
 				if last_point:
 					for _ in range(last_point.indent):
 						format_line += '\t'
-						print(2)
 					for _ in range(self.multiline_indent):
 						format_line += ' '
-						print(3)
 				text = self._get_text(line, is_checkbox=False, is_multiline=True)
 				format_line += text
 				multiline_line += format_line
-				print(4)
 				if last_point:
 					if multiline_line:
 						last_point.append_text(multiline_line)

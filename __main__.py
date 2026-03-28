@@ -19,9 +19,8 @@ vendor = os.getenv('ELJUR_VENDOR')
 devkey = os.getenv('ELJUR_DEVKEY')
 
 ep = EljurParser(login, password, devkey, school_class, vendor)
-jp = JsonParser()
 sl = SubjectList()
-app = App(jp, sl)
+app = App(sl)
 d = Date()
 
 raw_mark_from_date = '12.01.2026'

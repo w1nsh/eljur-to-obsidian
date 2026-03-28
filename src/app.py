@@ -8,10 +8,9 @@ from src.school.homework import Homework, HomeworkFile
 class App:
 	def __init__(
 		self,
-		json_parser: JsonParser,
 		subject_list: SubjectList,
 	) -> None:
-		self.json_parser = json_parser
+		self.json_parser = JsonParser()
 		self.subject_list = subject_list
 
 

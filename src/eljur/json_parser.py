@@ -12,7 +12,7 @@ class JsonParser:
 			self, 
 			json_name: str, 
 			user_id: str | None = None
-		) -> list[str]:
+	) -> list[str]:
 		subject_list = []
 		with open(json_name, 'r', encoding='utf-8') as f:
 			marks_json = json.load(f)
@@ -33,7 +33,7 @@ class JsonParser:
 			self,
 			json_name: str,
 			user_id: str | None = None,
-		) -> dict[str, list[int]]:
+	) -> dict[str, list[int]]:
 		lessons_marks = {}
 		with open(json_name, 'r', encoding='utf-8') as f:
 			marks_json = json.load(f)
@@ -59,7 +59,7 @@ class JsonParser:
 	def parse_homework(
 			self,
 			json_name: str,
-		) -> dict[str, dict[str, tuple[list[str], list[tuple[str, str]]]]]:
+	) -> dict[str, dict[str, tuple[list[str], list[tuple[str, str]]]]]:
 		lsns_hw = {}
 		with open(json_name, 'r', encoding='utf-8') as f:
 			hw_json = json.load(f)
@@ -92,7 +92,7 @@ class JsonParser:
 	def parse_homework_dates(
 			self,
 			json_name: str,
-		) -> list[str]:
+	) -> list[str]:
 		with open(json_name, 'r', encoding='utf-8') as f:
 			homeworks_json = json.load(f)
 			date_list = []
