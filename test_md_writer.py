@@ -24,7 +24,6 @@ ep = EljurParser(login, password, devkey, school_class, vendor)
 jp = JsonParser()
 sl = SubjectList()
 app = App(sl)
-d = Date()
 mdw = MdWriter('C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md', 'utf-8', 4, 2)
 mdp = MdParser(
 	"C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md", 
@@ -39,11 +38,11 @@ raw_mark_to_date = '08.03.2026'
 raw_homework_from_date = '02.03.2026'
 raw_homework_to_date = '03.03.2026'
 
-mark_from_date = d.convert_date_to_json_format(raw_mark_from_date)
-mark_to_date = d.convert_date_to_json_format(raw_mark_to_date)
+mark_from_date = Date.to_eljur(raw_mark_from_date)
+mark_to_date = Date.to_eljur(raw_mark_to_date)
 
-homework_from_date = d.convert_date_to_json_format(raw_homework_from_date)
-homework_to_date = d.convert_date_to_json_format(raw_homework_to_date)
+homework_from_date = Date.to_eljur(raw_homework_from_date)
+homework_to_date = Date.to_eljur(raw_homework_to_date)
 
 
 # date of last pars homework (for download from this date to current date)
@@ -76,7 +75,7 @@ mdp_ast = mdp.md_to_ast(lines)
 
 with open('C:\\Users\\anton\\Documents\\Main\\Школьное\\mdw_test.md', 'w', encoding='utf-8') as f:
 	sl_ast = mdw.generate_subject_ast(sl)
-	merge_ast = mdw.merge_changes_obs(mdp_ast, sl_ast, mdp_ast)
+	merge_ast = mdw.merge_changes(mdp_ast, sl_ast, mdp_ast)
 	merge_ast = mdw._clean_done(merge_ast)
 	if merge_ast:
 		md = mdw.ast_to_md(merge_ast)

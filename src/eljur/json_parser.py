@@ -4,10 +4,6 @@ from src.utils.date import Date
 
 
 class JsonParser:
-	def __init__(self) -> None:
-		self.d = Date()
-
-
 	def get_subject_list(
 			self, 
 			json_name: str, 
@@ -67,7 +63,7 @@ class JsonParser:
 				days = hw_json['response']['result']['days']
 				for day in days:
 					lsns = days[day]['items']
-					date = self.d.convert_date_from_json_format(day)
+					date = Date.to_basic(day)
 					for lsn in lsns:
 						date_hw = {}
 						lsn_name = lsn['name']
@@ -99,7 +95,7 @@ class JsonParser:
 			try:
 				days = homeworks_json['response']['result']['days']
 				for day in days:
-					date = self.d.convert_date_from_json_format(day)
+					date = Date.to_basic(day)
 					date_list.append(date)
 				return date_list
 			except Exception as e:

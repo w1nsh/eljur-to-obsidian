@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from src.md.md_point_node import MdPointNode
 from src.school.subject_list import SubjectList
 
@@ -103,12 +101,12 @@ class MdWriter:
 		return text.replace('\n', '')	
 	
 
-	def merge_changes_obs(self, old_md: list[MdPointNode], new_md: list[MdPointNode], full_old_md: list[MdPointNode]) -> list[MdPointNode]:
+	def merge_changes(self, old_md: list[MdPointNode], new_md: list[MdPointNode], full_old_md: list[MdPointNode]) -> list[MdPointNode]:
 		if old_md and new_md:
 			for new_point in new_md:
 				for old_point in old_md:
 					if self._points_is_clones(old_point, new_point):
-						children = self.merge_changes_obs(old_point.children, new_point.children, full_old_md)
+						children = self.merge_changes(old_point.children, new_point.children, full_old_md)
 						old_point.children = children
 						break
 				else:
@@ -116,7 +114,6 @@ class MdWriter:
 					if new_parent:
 						match = self._search_point(full_old_md, new_parent)
 						if match:
-							print('add', new_point.text)
 							match.append_child(new_point)
 							new_point.set_parent(match)
 					else:

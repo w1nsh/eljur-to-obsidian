@@ -1,0 +1,20 @@
+{
+	"marks": {
+		"need": true,
+		"path": "C:/Users/anton/Documents/Main/Школьное/marks_test.md",
+		"from": "12.01.2026",
+		"to": "08.03.2026",
+		"subjects": [
+			{
+				"name": "Алгебра",
+				"desired": 5
+			}
+		]
+	},
+	"homeworks": {
+		"need": true,
+		"path": "C:/Users/anton/Documents/Main/Школьное/mdw_test.md",
+		"from": "02.03.2026",
+		"to": "03.03.2026"
+	}
+}

@@ -21,7 +21,6 @@ devkey = os.getenv('ELJUR_DEVKEY')
 ep = EljurParser(login, password, devkey, school_class, vendor)
 sl = SubjectList()
 app = App(sl)
-d = Date()
 
 raw_mark_from_date = '12.01.2026'
 raw_mark_to_date = '10.02.2026'
@@ -29,11 +28,11 @@ raw_mark_to_date = '10.02.2026'
 raw_homework_from_date = '10.02.2026'
 raw_homework_to_date = '10.02.2026'
 
-mark_from_date = d.convert_date_to_json_format(raw_mark_from_date)
-mark_to_date = d.convert_date_to_json_format(raw_mark_to_date)
+mark_from_date = Date.to_eljur(raw_mark_from_date)
+mark_to_date = Date.to_eljur(raw_mark_to_date)
 
-homework_from_date = d.convert_date_to_json_format(raw_homework_from_date)
-homework_to_date = d.convert_date_to_json_format(raw_homework_to_date)
+homework_from_date = Date.to_eljur(raw_homework_from_date)
+homework_to_date = Date.to_eljur(raw_homework_to_date)
 
 
 # date of last pars homework (for download from this date to current date)
