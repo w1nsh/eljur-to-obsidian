@@ -253,6 +253,39 @@ class EljurParser:
 		response = self._get_request('newgetdiary', params)
 		if response:
 			return response
+		
+
+	def get_periods(
+		self,
+		student: str | None = None,
+		weeks: bool = False,
+		show_disabled: bool = False,
+	) -> dict[str, Any] | None:
+		"""
+		Gets information about the certification periods for which students final grades are assigned.
+
+		If Students is empty requests periods for all children of user, if user is parent.
+		If user is student, he will get periods for himself.
+		If weeks is True, the response will include information about the weeks of the periods.
+		If show_disabled is True, the response will include information about the not occurred periods.
+
+		Args:
+			student (Optional[str]): The ID of the student to get the periods for. Defaults to None.
+			weeks (bool): Whether to include information about the weeks of the periods. Defaults to False.
+			show_disabled (bool): Whether to include information about the not occurred periods. Defaults to False
+
+		Returns:
+			dict[str, Any] | None: dictionary if getting periods is successful, None otherwise.
+		"""
+		params = {
+			'weeks': weeks,
+			'show_disabled': show_disabled,
+		}
+		if student:
+			params['students'] = student
+		response = self._get_request('getperiods', params)
+		if response:
+			return response
 
 
 	def _get_request(
@@ -294,7 +327,6 @@ class EljurParser:
 			print(f'Request Exception: {e}')
 		except json.JSONDecodeError as e:
 			print(f'JSON Decode Error: {e}')
-		return None
 
 
 	def _post_request(
@@ -328,4 +360,3 @@ class EljurParser:
 			print(f'Request Exception: {e}')
 		except json.JSONDecodeError as e:
 			print(f'JSON Decode Error: {e}')
-		return None
