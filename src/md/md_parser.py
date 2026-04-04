@@ -20,7 +20,7 @@ class MdParser:
 	def read(
 		self, 
 		filepath: str | None = None, 
-		encoding: str | None = None
+		encoding: str | None = None,
 	) -> str:
 		if not filepath:
 			filepath = self.filepath
@@ -31,12 +31,18 @@ class MdParser:
 		return text
 
 
-	def split_to_lines(self, text: str) -> list[str]:
+	def split_to_lines(
+		self,
+		text: str,
+	) -> list[str]:
 		lines = text.splitlines()
 		return lines
 	
 
-	def md_to_ast(self, lines: list[str]) -> list[MdPointNode]:
+	def md_to_ast(
+		self,
+		lines: list[str],
+	) -> list[MdPointNode]:
 		main_points = []
 		parents = []
 		last_point = None
@@ -89,7 +95,10 @@ class MdParser:
 		return main_points
 
 
-	def _get_indent_level(self, line: str) -> int:
+	def _get_indent_level(
+		self,
+		line: str,
+	) -> int:
 		pattern = r'([\t ]*) - '
 		res = re.match(
 			pattern,
@@ -103,11 +112,11 @@ class MdParser:
 	
 
 	def _get_text(
-			self, 
-			line: str, 
-			is_checkbox: bool, 
-			is_multiline: bool
-		) -> str:
+		self, 
+		line: str, 
+		is_checkbox: bool, 
+		is_multiline: bool,
+	) -> str:
 		if is_checkbox:
 			pattern = r'\s* - \[[ x]\] (.*)'
 		else:
@@ -142,7 +151,10 @@ class MdParser:
 						''')
 
 
-	def _is_point(self, line: str) -> bool:
+	def _is_point(
+		self,
+		line: str,
+	) -> bool:
 		pattern = r'\s* - '
 		res = re.match(
 			pattern,
@@ -153,7 +165,10 @@ class MdParser:
 		return False
 
 
-	def _is_checkbox(self, line: str) -> bool:
+	def _is_checkbox(
+		self,
+		line: str,
+	) -> bool:
 		pattern = r'\s* - \[[ x]\] '
 		res = re.match(
 			pattern,
@@ -164,7 +179,10 @@ class MdParser:
 		return False
 
 
-	def _is_done_checkbox(self, line: str) -> bool:
+	def _is_done_checkbox(
+		self,
+		line: str,
+	) -> bool:
 		pattern = r'\s* - \[x\]'
 		res = re.match(
 			pattern,

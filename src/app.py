@@ -17,9 +17,9 @@ class App:
 	def set_subject_list(
 		self, 
 		json_name: str, 
-		user_id: str | None = None
+		user_id: str | None = None,
 	) -> None:
-		subject_list = self.json_parser.get_subject_list(json_name, user_id)
+		subject_list = self.json_parser.parse_subject_list(json_name, user_id)
 		for subject in subject_list:
 			subject_obj = Subject(subject, 5)
 			self.subject_list.append_subject(subject_obj)
@@ -28,7 +28,7 @@ class App:
 	def set_subjects_marks(
 		self,
 		json_name: str,
-		user_id: str | None = None
+		user_id: str | None = None,
 	) -> None:
 		lessons_marks = self.json_parser.parse_marks(json_name, user_id)
 		subject_list = self.subject_list.subject_list

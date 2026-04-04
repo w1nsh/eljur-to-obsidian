@@ -4,10 +4,10 @@ from src.utils.date import Date
 
 
 class JsonParser:
-	def get_subject_list(
-			self, 
-			json_name: str, 
-			user_id: str | None = None
+	def parse_subject_list(
+		self,
+		json_name: str, 
+		user_id: str | None = None,
 	) -> list[str]:
 		subject_list = []
 		with open(json_name, 'r', encoding='utf-8') as f:
@@ -23,12 +23,12 @@ class JsonParser:
 				return subject_list
 			except Exception as e:
 				raise Exception(f'Error parsing marks JSON (get_subject_list): {e}')
-	
+
 
 	def parse_marks(
-			self,
-			json_name: str,
-			user_id: str | None = None,
+		self,
+		json_name: str,
+		user_id: str | None = None,
 	) -> dict[str, list[int]]:
 		lessons_marks = {}
 		with open(json_name, 'r', encoding='utf-8') as f:
@@ -53,8 +53,8 @@ class JsonParser:
 
 
 	def parse_homework(
-			self,
-			json_name: str,
+		self,
+		json_name: str,
 	) -> dict[str, dict[str, tuple[list[str], list[tuple[str, str]]]]]:
 		lsns_hw = {}
 		with open(json_name, 'r', encoding='utf-8') as f:
@@ -86,8 +86,8 @@ class JsonParser:
 
 
 	def parse_homework_dates(
-			self,
-			json_name: str,
+		self,
+		json_name: str,
 	) -> list[str]:
 		with open(json_name, 'r', encoding='utf-8') as f:
 			homeworks_json = json.load(f)

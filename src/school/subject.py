@@ -12,13 +12,29 @@ class Subject:
 	marks: MarkList = field(default_factory=lambda: MarkList([]))
 
 
-	def set_marks(self, marks: MarkList) -> None:
+	def set_marks(
+		self,
+		marks: MarkList,
+	) -> None:
 		self.marks = marks
 
 
-	def set_homeworks(self, homeworks: list[Homework]) -> None:
+	def set_homeworks(
+		self,
+		homeworks: list[Homework],
+	) -> None:
 		self.homeworks = homeworks
 
 
-	def append_homework(self, homework: Homework) -> None:
+	def set_desired_mark(
+		self,
+		desired_mark: int,
+	) -> None:
+		self.desired_mark = desired_mark
+
+
+	def append_homework(
+		self,
+		homework: Homework,
+	) -> None:
 		self.homeworks.append(homework)
