@@ -9,6 +9,7 @@ class JsonParser:
 		json_name: str, 
 		user_id: str | None = None,
 	) -> list[str]:
+		# works with only marks Json
 		subject_list = []
 		with open(json_name, 'r', encoding='utf-8') as f:
 			marks_json = json.load(f)
