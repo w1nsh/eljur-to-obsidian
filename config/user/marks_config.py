@@ -10,11 +10,16 @@ class MarksConfig:
 	Dataclass for storing parameters about marks.
 
 	Attributes:
-		need (bool): The need to display information about marks to the user.
-		path (Path): Path to the file for storing information about the user's marks.
-		from_date (str): Start date in 'dd.mm.yyyy' format for a parsing marks in the given date range.
-		to_date (str): End date in 'dd.mm.yyyy' format for a parsing marks in the given date range.
-		subjects (list[DesiredMark]): List of the sets of pairs with subject and desired mark of him.
+		need (bool):
+			Whether to show marks.
+		path (Path):
+			Path to the file for storing information about the user's marks.
+		from_date (str):
+			Start date in 'dd.mm.yyyy' format for a parsing marks in the given date range.
+		to_date (str):
+			End date in 'dd.mm.yyyy' format for a parsing marks in the given date range.
+		subjects (list[DesiredMark]):
+			List of the sets of pairs with subject and desired mark of him.
 	"""
 	need: bool
 	path: Path
@@ -70,7 +75,7 @@ class MarksConfig:
 		Sets new date end of the range.
 
 		Args:
-			from_date (str): New date end of the range.
+			to_date (str): New date end of the range.
 		"""
 		self.to_date = to_date
 

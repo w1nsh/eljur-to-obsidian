@@ -20,27 +20,31 @@ class EljurParser:
 
 	def __init__(
 		self,
-		login: str,
-		password: str,
 		devkey: str,
-		school_class: str,
 		vendor: str,
+		school_class: str,
+		login: str | None = None,
+		password: str | None = None,
+		auth_token: str | None = None,
 	) -> None:
 		"""
 		Initializing the EljurParser object.
 
 		Args:
-			login (str): The login of the user.
-			password (str): The password of the user.
 			devkey (str): The developer key for API access.
-			school_class (str): The class of the school.
 			vendor (str): The school name.
+			school_class (str): The class of the school.
+			login (str | None): The login of the user.
+			password (str | None): The password of the user.
+			auth_token (str | None): The authentication token for Eljur API access.
+				If provided, it will be used for authentication instead of login and password.
 		"""
 		self._login = login
 		self._password = password
 		self._devkey = devkey
 		self._school_class = school_class
 		self._vendor = vendor
+		self._auth_token = auth_token
 		self._session = requests.Session()
 		self._base_url = f'https://{self._vendor}.eljur.ru/api'
 
@@ -257,7 +261,7 @@ class EljurParser:
 
 	def get_periods(
 		self,
-		student: str | None = None,
+		student: str,
 		weeks: bool = False,
 		show_disabled: bool = False,
 	) -> dict[str, Any] | None:
@@ -270,7 +274,7 @@ class EljurParser:
 		If show_disabled is True, the response will include information about the not occurred periods.
 
 		Args:
-			student (Optional[str]): The ID of the student to get the periods for. Defaults to None.
+			student (str): The ID of the student to get the periods for.
 			weeks (bool): Whether to include information about the weeks of the periods. Defaults to False.
 			show_disabled (bool): Whether to include information about the not occurred periods. Defaults to False
 
@@ -278,14 +282,25 @@ class EljurParser:
 			dict[str, Any] | None: dictionary if getting periods is successful, None otherwise.
 		"""
 		params = {
+			'students': student,
 			'weeks': weeks,
 			'show_disabled': show_disabled,
 		}
-		if student:
-			params['students'] = student
 		response = self._get_request('getperiods', params)
 		if response:
 			return response
+
+
+	def get_auth_token(
+		self,
+	) -> str | None:
+		"""
+		Returns the authentication token for API access.
+
+		Returns:
+			str: The authentication token.
+		"""
+		return self._auth_token
 
 
 	def _get_request(
