@@ -1,9 +1,7 @@
 {
 	"settings": {
 		"env": "config/.env",
-		"config": "config/config.json",
-		"eljur_cache": "config/cache/eljur_cache.json",
-		"user_hash": "config/hash/user_hash.json"
+		"config": "config/config.json"
 	},
 	"responses": {
 		"assessments": "responses/assessments.json",

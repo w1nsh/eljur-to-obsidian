@@ -5,58 +5,85 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from config.user.config import UserConfig, UserEljurConfig
+from config.user.config import UserDataConfig, UserEljurConfig
 from config.user.marks_config import MarksConfig, DesiredMark
 from config.user.homeworks_config import HomeworksConfig
 from config.paths.paths import Paths, SettingsPaths, ResponsesPaths
 
 
 class ConfigParser:
+	"""
+	Class for parsing config files and loading data from them.
+	
+	Attributes:
+		_base_dir (Path): base directory of the project.
+		_paths_path (Path): path to the file with paths.
+		_encoding (str): encoding for reading files.
+		_paths (Paths): paths to all technical files and directories used in the project.
+	"""
+
 	def __init__(
 		self,
-		base_dir: Path,
-		paths_file: Path,
 		encoding: str,
 	) -> None:
-		self._base_dir = base_dir
-		self._paths_file = paths_file
 		self._encoding = encoding
 
 
 	def load_paths(
 		self,
+		base_dir: Path,
+		paths_path: Path,
 	) -> Paths:
-		paths_dict = self._load(self._paths_file)
+		"""
+		Loads paths file. Create a Paths dataclass.
+
+		All paths is relative to the base directory of the project.
+
+		Args:
+			base_dir (Path): base directory of the project.
+			paths_path (Path): relative path to the file with paths.
+
+		Returns:
+			Paths: paths to all technical files of the project.
+		"""
+		paths_dict = self._load_json(base_dir / paths_path)
 		settings_paths_dict = paths_dict['settings']
 		responses_paths_dict = paths_dict['responses']
 		settings_paths = SettingsPaths(
-			env=self._base_dir / settings_paths_dict['env'],
-			config=self._base_dir / settings_paths_dict['config'],
-			eljur_cache=self._base_dir / settings_paths_dict['eljur_cache'],
-			user_hash=self._base_dir / settings_paths_dict['user_hash'],
+			env=base_dir / settings_paths_dict['env'],
+			config=base_dir / settings_paths_dict['config'],
 		)
 		responses_paths = ResponsesPaths(
-			assessments=self._base_dir / responses_paths_dict['assessments'],
-			diary=self._base_dir / responses_paths_dict['diary'],
-			homework=self._base_dir / responses_paths_dict['homework'],
-			marks=self._base_dir / responses_paths_dict['marks'],
-			periods=self._base_dir / responses_paths_dict['periods'],
-			rules=self._base_dir / responses_paths_dict['rules'],
-			schedule=self._base_dir / responses_paths_dict['schedule'],
+			assessments=base_dir / responses_paths_dict['assessments'],
+			diary=base_dir / responses_paths_dict['diary'],
+			homework=base_dir / responses_paths_dict['homework'],
+			marks=base_dir / responses_paths_dict['marks'],
+			periods=base_dir / responses_paths_dict['periods'],
+			rules=base_dir / responses_paths_dict['rules'],
+			schedule=base_dir / responses_paths_dict['schedule'],
 		)
-		paths = Paths(
-			settings_paths=settings_paths,
-			responses_paths=responses_paths,
-			base_dir=self._base_dir,
+		self._paths = Paths(
+			settings=settings_paths,
+			responses=responses_paths,
+			base_dir=base_dir,
 		)
-		self._paths = paths
 		return self._paths
 
 
-	def load_user_config(
+	def load_user_data_config(
 		self,
-	) -> UserConfig:
-		user_config_dict = self._load(self._base_dir / self._paths.settings_paths.config)
+		config_path: Path,
+	) -> UserDataConfig:
+		"""
+		Loads user data config. Create a UserDataConfig dataclass.
+
+		Args:
+			config_path (Path): absolute path to the user data config file.
+
+		Returns:
+			UserDataConfig: user data configuration.
+		"""
+		user_config_dict = self._load_json(config_path)
 		marks_config_dict = user_config_dict['marks']
 		homeworks_config_dict = user_config_dict['homeworks']
 		marks_config = MarksConfig(
@@ -78,23 +105,41 @@ class ConfigParser:
 			from_date=homeworks_config_dict['from'],
 			to_date=homeworks_config_dict['to']
 		)
-		user_config = UserConfig(
-			marks_config=marks_config,
-			homeworks_config=homeworks_config
+		user_data_config = UserDataConfig(
+			marks=marks_config,
+			homeworks=homeworks_config
 		)
-		return user_config
+		return user_data_config
 
 
 	def load_user_eljur_config(
 		self,
+		env_path: Path,
 	) -> UserEljurConfig:
-		load_dotenv(self._base_dir / self._paths.settings_paths.env)
-		login = getenv('ELJUR_LOGIN')
-		password = getenv('ELJUR_PASSWORD')
-		school_class = getenv('ELJUR_SCHOOL_CLASS')
-		vendor = getenv('ELJUR_VENDOR')
-		devkey = getenv('ELJUR_DEVKEY')
-		auth_token = getenv('ELJUR_AUTH_TOKEN')
+		"""
+		Loads user Eljur config. Create a UserEljurConfig dataclass.
+
+		Args:
+			env_path (Path): absolute path to the .env config file.
+		
+		Returns:
+			UserEljurConfig: user Eljur configuration.
+		"""
+		if env_path.exists():
+			load_dotenv(env_path)
+			login = getenv('ELJUR_LOGIN')
+			password = getenv('ELJUR_PASSWORD')
+			school_class = getenv('ELJUR_SCHOOL_CLASS')
+			vendor = getenv('ELJUR_VENDOR')
+			devkey = getenv('ELJUR_DEVKEY')
+			auth_token = getenv('ELJUR_AUTH_TOKEN')
+		else:
+			login = None
+			password = None
+			school_class = None
+			vendor = None
+			devkey = None
+			auth_token = None
 		user_eljur_config = UserEljurConfig(
 			login if login else '',
 			password if password else '',
@@ -106,10 +151,20 @@ class ConfigParser:
 		return user_eljur_config
 
 
-	def _load(
+	def _load_json(
 		self,
 		path: Path,
 	) -> dict[str, Any]:
-		data = json.loads(path.read_text(encoding=self._encoding))
-		return data
+		"""
+		Loads json file and returns it as a dictionary.
+
+		Args:
+			path (Path): absolute path to the json file.
+
+		Returns:
+			dict[str, Any]: content of the json file as a dictionary.
+		"""
+		json_string = path.read_text(encoding=self._encoding)
+		json_dict = json.loads(json_string)
+		return json_dict
 	

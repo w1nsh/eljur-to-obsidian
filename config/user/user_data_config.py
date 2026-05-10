@@ -5,7 +5,7 @@ from config.user.homeworks_config import HomeworksConfig
 
 
 @dataclass
-class UserConfig:
-	marks_config: MarksConfig
-	homeworks_config: HomeworksConfig
+class UserDataConfig:
+	marks: MarksConfig
+	homeworks: HomeworksConfig
 	

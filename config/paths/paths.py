@@ -1,12 +1,21 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from config.user.settings_paths import SettingsPaths
+from config.paths.settings_paths import SettingsPaths
 from config.paths.responses_paths import ResponsesPaths
 
 
 @dataclass
 class Paths:
-	settings_paths: SettingsPaths
-	responses_paths: ResponsesPaths
+	"""
+	Dataclass for storing paths to all technical files in the project.
+	Storing only absolute paths.
+
+	Attributes:
+		settings (SettingsPaths): Paths to all settings files.
+		responses (ResponsesPaths): Paths to all responses files.
+		base_dir (Path): Base directory of the project.
+	"""
+	settings: SettingsPaths
+	responses: ResponsesPaths
 	base_dir: Path

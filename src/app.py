@@ -121,7 +121,7 @@ class App:
 	) -> None:
 		# works only with marks.json
 		subject_list = self._json_parser.load_subject_list(
-			self._config.paths.responses_paths.marks,
+			self._config.paths.responses.marks,
 			user_id,
 		)
 		for subject in subject_list: # adds desired marks
