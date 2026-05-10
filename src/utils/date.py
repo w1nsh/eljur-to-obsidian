@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 class Date:
 	"""
-	Class for operations with dates.
+	Utility class for operations with dates.
 	"""
 
 	@staticmethod
@@ -54,9 +54,11 @@ class Date:
 		Args:
 			from_date (str): Start date.
 			to_date (str): End date.
-			eljur_format (Optional[bool]): If True, the dates will be in 'yyyymmdd' format, else 'dd.mm.yyyy'. Defaults to False.
+			eljur_format (bool):
+				If True, the dates will be in 'yyyymmdd' format, else 'dd.mm.yyyy'.
+				Defaults to False.
 		Returns:
-			list[str]: List of dates in the interval.s
+			list[str]: List of dates in the interval.
 		"""
 		from_date_format = datetime.strptime(from_date, '%d.%m.%Y')
 		to_date_format = datetime.strptime(to_date, '%d.%m.%Y')
@@ -74,11 +76,13 @@ class Date:
 		eljur_format: bool = False,
 	) -> str:
 		"""
-		Finds the current date.
+		Return current date in specified format.
 
 		Args:
-			eljur_format (Optional[bool]): If True, the returned date will be in 'yyyymmdd' format, else 'dd.mm.yyyy'. Defaults to False.
-		
+			eljur_format (bool):
+				If True, the returned date will be in 'yyyymmdd' format, else 'dd.mm.yyyy'.
+				Defaults to False.
+
 		Returns:
 			str: Current date.
 		"""

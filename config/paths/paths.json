@@ -1,0 +1,17 @@
+{
+	"settings": {
+		"env": "config/.env",
+		"config": "config/config.json",
+		"eljur_cache": "config/cache/eljur_cache.json",
+		"user_hash": "config/hash/user_hash.json"
+	},
+	"responses": {
+		"assessments": "responses/assessments.json",
+		"diary": "responses/diary.json",
+		"homework": "responses/homeworks.json",
+		"marks": "responses/marks.json",
+		"periods": "responses/periods.json",
+		"rules": "responses/rules.json",
+		"schedule": "responses/schedule.json"
+	}
+}

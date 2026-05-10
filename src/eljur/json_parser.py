@@ -1,91 +1,104 @@
+from pathlib import Path
 import json
 
 from src.utils.date import Date
 
 
 class JsonParser:
-	def parse_subject_list(
+	def __init__(
 		self,
-		json_name: str, 
-		user_id: str | None = None,
+		encoding: str,
+	) -> None:
+		self._encoding = encoding
+
+
+	def load_subject_list(
+		self,
+		marks_path: Path,
+		user_id: str,
 	) -> list[str]:
 		subject_list = []
-		with open(json_name, 'r', encoding='utf-8') as f:
-			marks_json = json.load(f)
-			try:
-				students = marks_json['response']['result']['students']
-				if not user_id:
-					user_id = list(students.keys())[0]
-				lessons = students[user_id]['lessons']
-				for lesson in lessons:
-					lesson_name = lesson['name']
-					subject_list.append(lesson_name)
-				return subject_list
-			except Exception as e:
-				raise Exception(f'Error parsing marks JSON (get_subject_list): {e}')
+		marks_text = marks_path.read_text(self._encoding)
+		marks_dict = json.loads(marks_text)
+		students = marks_dict['response']['result']['students']
+		lessons = students[user_id]['lessons']
+		for lesson in lessons:
+			lesson_name = lesson['name']
+			subject_list.append(lesson_name)
+		return subject_list
 
 
-	def parse_marks(
+	def load_marks(
 		self,
-		json_name: str,
-		user_id: str | None = None,
+		marks_path: Path,
+		user_id: str,
 	) -> dict[str, list[int]]:
 		lessons_marks = {}
-		with open(json_name, 'r', encoding='utf-8') as f:
-			marks_json = json.load(f)
-			try:
-				students = marks_json['response']['result']['students']
-				if not user_id:
-					user_id = list(students.keys())[0]
-				lessons = students[user_id]['lessons']
-				for lesson in lessons:
-					lesson_name = lesson['name']
-					marks = lesson['marks']
-					mark_list = []
-					for mark in marks:
-						if mark['count']:
-							mark_value = mark['convert']
-							mark_list.append(mark_value)
-					lessons_marks[lesson_name] = mark_list
-				return lessons_marks
-			except Exception as e:
-				raise Exception(f'Error parsing marks JSON (parse_marks): {e}')
+		marks_text = marks_path.read_text(self._encoding)
+		marks_dict = json.loads(marks_text)
+		students = marks_dict['response']['result']['students']
+		lessons = students[user_id]['lessons']
+		for lesson in lessons:
+			lesson_name = lesson['name']
+			marks = lesson['marks']
+			mark_list = []
+			for mark in marks:
+				if mark['count']:
+					mark_value = mark['convert']
+					mark_list.append(mark_value)
+			lessons_marks[lesson_name] = mark_list
+		return lessons_marks
 
 
-	def parse_homework(
+	def load_homeworks(
 		self,
-		json_name: str,
-	) -> dict[str, dict[str, tuple[list[str], list[tuple[str, str]]]]]:
-		lsns_hw = {}
-		with open(json_name, 'r', encoding='utf-8') as f:
-			hw_json = json.load(f)
-			try:
-				days = hw_json['response']['result']['days']
-				for day in days:
-					lsns = days[day]['items']
-					date = Date.to_basic(day)
-					for lsn in lsns:
-						date_hw = {}
-						lsn_name = lsn['name']
-						hws = lsn['homework']
-						files = lsn.get('files', {}).get('file', [])
-						hw_list = [hw['value'] for hw in hws.values()]
-						if files:
-							file_list = [(file['filename'], file['link']) for file in files]
-						else:
-							file_list = []
-						date_hw[date] = (hw_list, file_list)
-						dt_hw = lsns_hw.get(lsn_name, {})
-						if not dt_hw:
-							lsns_hw[lsn_name] = date_hw
-						else:
-							lsns_hw[lsn_name].update(date_hw)
-				return lsns_hw
-			except Exception as e:
-				raise Exception(f'Error parsing homeworks JSON (parse_homework): {e}')
+		homeworks_path: Path,
+	) -> dict[str, dict[str, list[dict[str, str]]]]:
+		subjects: dict[str, dict] = {}
+		homeworks_str = homeworks_path.read_text(self._encoding)
+		homeworks_dict = json.loads(homeworks_str)
+		days = homeworks_dict['response']['result']['days']
+		for day in days:
+			date = Date.to_basic(day)
+			lessons = days[day]['items']
+			for lesson in lessons:
+				homeworks: list[dict[str, str]] = []
+				files: dict[str, list[dict[str, str]]] = {}
+				lesson_name = lesson['name']
+				raw_files = lesson.get('files', {})
+				raw_homeworks = lesson['homework']
+				for raw_file in raw_files.values():
+					file_id = raw_file['id']
+					filename = raw_file['filename']
+					file_link = raw_file['link']
+					file = {
+						'name': filename,
+						'link': file_link,
+					}
+					if files.get(file_id):
+						files[file_id].append(file)
+					else:
+						files[file_id] = [file]
+				for raw_homework in raw_homeworks.values():
+					homework = {}
+					homework_id = raw_homework['id']
+					homework_value = raw_homework['value']
+					homework['value'] = homework_value
+					if homework_id in files.keys():
+						homework['files'] = files[homework_id]
+					else:
+						homework['files'] = []
+					homeworks.append(homework)
+				if subjects.get(lesson_name):
+					subjects[lesson_name][date] = homeworks
+				else:
+					subjects[lesson_name] = {
+						date: homeworks
+					}
+		return subjects
 
 
-	def parse_homework_dates(
+	def load_homework_dates(
 		self,
 		json_name: str,
 	) -> list[str]:
@@ -100,3 +113,18 @@ class JsonParser:
 				return date_list
 			except Exception as e:
 				raise Exception(f'Error parsing homeworks JSON (parse_homework_dates): {e}')
+
+
+	def load_start_period_dates(
+		self,
+		periods_path: Path,
+		user_id: str,
+	) -> list[str]:
+		periods_text = periods_path.read_text(self._encoding)
+		periods_dict = json.loads(periods_text)
+		start_period_dates = []
+		periods = periods_dict['response']['result']['students'][user_id]['periods']
+		for period in periods:
+			start_date = Date.to_basic(period['start'])
+			start_period_dates.append(start_date)
+		return start_period_dates

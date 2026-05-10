@@ -1,3 +1,10 @@
+from pathlib import Path
+
+from config.user.config_manager import Config, ConfigManager
+from config.user.marks_config import MarksConfig
+from config.user.homeworks_config import HomeworksConfig
+from src.utils.date import Date
+from src.eljur.eljur_parser import EljurParser
 from src.eljur.json_parser import JsonParser
 from src.school.subject_list import SubjectList
 from src.school.subject import Subject
@@ -8,42 +15,140 @@ from src.school.homework import Homework, HomeworkFile
 class App:
 	def __init__(
 		self,
-		subject_list: SubjectList,
+		base_dir: Path,
+		paths_path: Path,
+		encoding: str = 'utf-8',
 	) -> None:
-		self.json_parser = JsonParser()
-		self.subject_list = subject_list
+		self._base_dir = base_dir
+		self._paths_file = paths_path
+		self._encoding = encoding
+		self._config_manager = ConfigManager(
+			base_dir,
+			paths_path,
+			encoding
+		)
+		self._json_parser = JsonParser(encoding)
+		self._subject_list = SubjectList()
 
 
-	def set_subject_list(
-		self, 
-		json_name: str, 
-		user_id: str | None = None,
-	) -> None:
-		subject_list = self.json_parser.parse_subject_list(json_name, user_id)
-		for subject in subject_list:
-			subject_obj = Subject(subject, 5)
-			self.subject_list.append_subject(subject_obj)
-
-
-	def set_subjects_marks(
+	def _load_config(
 		self,
-		json_name: str,
-		user_id: str | None = None,
 	) -> None:
-		lessons_marks = self.json_parser.parse_marks(json_name, user_id)
-		subject_list = self.subject_list.subject_list
+		self._config = self._config_manager.load_config()
+
+
+	def _eljur_login(
+		self,
+	) -> None:
+		if (
+			self._config.user_eljur_config.devkey and
+			self._config.user_eljur_config.vendor and
+			self._config.user_eljur_config.school_class
+			):
+			if self._config.user_eljur_config.auth_token:
+				self._eljur_parser = EljurParser(
+					devkey=self._config.user_eljur_config.devkey,
+					vendor=self._config.user_eljur_config.vendor,
+					school_class=self._config.user_eljur_config.school_class,
+					encoding=self._encoding,
+					auth_token=self._config.user_eljur_config.auth_token,
+				)
+			elif (
+				self._config.user_eljur_config.login and
+				self._config.user_eljur_config.password
+				):
+				self._eljur_parser = EljurParser(
+					devkey=self._config.user_eljur_config.devkey,
+					vendor=self._config.user_eljur_config.vendor,
+					school_class=self._config.user_eljur_config.school_class,
+					encoding=self._encoding,
+					login=self._config.user_eljur_config.login,
+					password=self._config.user_eljur_config.password,
+				)
+				access = self._eljur_parser.authenticate()
+				if access:
+					auth_token = self._eljur_parser.get_auth_token()
+					self._config.user_eljur_config.auth_token = auth_token
+					# add token to config and write it to .env file
+				# else:
+					# Add error auth failed
+			else:
+				# Add error no auth data
+				print('No auth data for Eljur login')
+				pass
+		else:
+			# Add error no auth data
+			print('No auth data for Eljur login')
+			pass
+
+
+	def _get_start_periods_dates(
+		self,
+		periods_path: Path,
+		user_id: str,
+	) -> list[str]:
+		periods = self._eljur_parser.get_periods(user_id, show_disabled=True)
+		# JSON WRITER ADD WRITE PERIODS TO JSON FROM ELJUR
+		start_dates = self._json_parser.load_start_period_dates(periods_path, user_id)
+		return start_dates
+
+
+	def _update_homeworks_dates(
+		self,
+		homeworks_config: HomeworksConfig,
+	) -> None:
+		current_date = Date.current_date()
+		last_to_date = homeworks_config.to_date
+		homeworks_config.set_from_date(last_to_date)
+		homeworks_config.set_to_date(current_date)
+
+	
+	def _update_marks_dates(
+		self,
+		marks_config: MarksConfig,
+	) -> None:
+		current_date = Date.current_date()
+
+		last_to_date = marks_config.to_date
+		marks_config.set_from_date(last_to_date)
+
+		marks_config.set_to_date(current_date)
+
+
+	def _load_subject_list(
+		self, 
+		user_id: str,
+	) -> None:
+		# works only with marks.json
+		subject_list = self._json_parser.load_subject_list(
+			self._config.paths.responses_paths.marks,
+			user_id,
+		)
+		for subject in subject_list: # adds desired marks
+			subject_obj = Subject(subject, 5)
+			self._subject_list.append_subject(subject_obj)
+
+
+	def _load_subjects_marks(
+		self,
+		marks_path: Path,
+		user_id: str,
+	) -> None:
+		lessons_marks = self._json_parser.load_marks(marks_path, user_id)
+		subject_list = self._subject_list.subject_list
 		for subject in subject_list:
 			marks = lessons_marks.get(subject.name, [])
 			mark_list = MarkList(marks)
 			subject.set_marks(mark_list)
 
 
-	def set_subjects_homeworks(
+	def _load_subjects_homeworks(
 		self,
-		json_name: str,
+		homeworks_path: Path,
 	) -> None:
-		dict_homeworks = self.json_parser.parse_homework(json_name)
-		subjects = self.subject_list.subject_list
+		# NOT WORKING, FUNC IN JSON PARSER HAS BEEN REWRITED
+		dict_homeworks = self._json_parser.load_homeworks(homeworks_path)
+		subjects = self._subject_list.subject_list
 		for subject in subjects:
 			subject_name = subject.name
 			if subject_name not in dict_homeworks.keys():
