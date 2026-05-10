@@ -76,7 +76,7 @@ class Date:
 		eljur_format: bool = False,
 	) -> str:
 		"""
-		Finds the current date.
+		Return current date in specified format.
 
 		Args:
 			eljur_format (bool):

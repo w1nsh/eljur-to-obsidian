@@ -1,6 +1,7 @@
 import requests
 import json
 from typing import Any
+from pathlib import Path
 
 
 class EljurParser:
@@ -23,6 +24,7 @@ class EljurParser:
 		devkey: str,
 		vendor: str,
 		school_class: str,
+		encoding: str,
 		login: str | None = None,
 		password: str | None = None,
 		auth_token: str | None = None,
@@ -34,6 +36,7 @@ class EljurParser:
 			devkey (str): The developer key for API access.
 			vendor (str): The school name.
 			school_class (str): The class of the school.
+			encoding (str): The encoding for writing files.
 			login (str | None): The login of the user.
 			password (str | None): The password of the user.
 			auth_token (str | None): The authentication token for Eljur API access.
@@ -43,10 +46,30 @@ class EljurParser:
 		self._password = password
 		self._devkey = devkey
 		self._school_class = school_class
+		self._encoding = encoding
 		self._vendor = vendor
 		self._auth_token = auth_token
 		self._session = requests.Session()
 		self._base_url = f'https://{self._vendor}.eljur.ru/api'
+
+
+	def write_json(
+		self,
+		response: dict[str, Any],
+		json_path: Path,
+	) -> None:
+		"""
+		Writes the response from the API to the JSON file.
+
+		Args:
+			response (dict[str, Any]): Dict for writing.
+			json_path (Path): The path to the JSON file.
+		"""
+		response_str = json.dumps(response, ensure_ascii=False, indent=4)
+		json_path.write_text(
+			response_str,
+			encoding=self._encoding,
+		)
 
 
 	def authenticate(
@@ -130,7 +153,7 @@ class EljurParser:
 			return response
 		
 
-	def get_homework(
+	def get_homeworks(
 		self,
 		from_date: str,
 		to_date: str,

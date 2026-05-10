@@ -40,27 +40,46 @@ class App:
 	def _eljur_login(
 		self,
 	) -> None:
-		if not self._config.user_eljur_config.auth_token:
-			self._eljur_parser = EljurParser(
-				self._config.user_eljur_config.devkey,
-				self._config.user_eljur_config.vendor,
-				self._config.user_eljur_config.school_class,
-				login=self._config.user_eljur_config.login,
-				password=self._config.user_eljur_config.password,
-			)
-			access = self._eljur_parser.authenticate()
-			if access:
-				auth_token = self._eljur_parser.get_auth_token()
-				# add token to config and write it to .env file
-			# else:
-				# Add error auth failed
+		if (
+			self._config.user_eljur_config.devkey and
+			self._config.user_eljur_config.vendor and
+			self._config.user_eljur_config.school_class
+			):
+			if self._config.user_eljur_config.auth_token:
+				self._eljur_parser = EljurParser(
+					devkey=self._config.user_eljur_config.devkey,
+					vendor=self._config.user_eljur_config.vendor,
+					school_class=self._config.user_eljur_config.school_class,
+					encoding=self._encoding,
+					auth_token=self._config.user_eljur_config.auth_token,
+				)
+			elif (
+				self._config.user_eljur_config.login and
+				self._config.user_eljur_config.password
+				):
+				self._eljur_parser = EljurParser(
+					devkey=self._config.user_eljur_config.devkey,
+					vendor=self._config.user_eljur_config.vendor,
+					school_class=self._config.user_eljur_config.school_class,
+					encoding=self._encoding,
+					login=self._config.user_eljur_config.login,
+					password=self._config.user_eljur_config.password,
+				)
+				access = self._eljur_parser.authenticate()
+				if access:
+					auth_token = self._eljur_parser.get_auth_token()
+					self._config.user_eljur_config.auth_token = auth_token
+					# add token to config and write it to .env file
+				# else:
+					# Add error auth failed
+			else:
+				# Add error no auth data
+				print('No auth data for Eljur login')
+				pass
 		else:
-			self._eljur_parser = EljurParser(
-				self._config.user_eljur_config.devkey,
-				self._config.user_eljur_config.vendor,
-				self._config.user_eljur_config.school_class,
-				auth_token=self._config.user_eljur_config.auth_token,
-			)
+			# Add error no auth data
+			print('No auth data for Eljur login')
+			pass
 
 
 	def _get_start_periods_dates(
@@ -112,10 +131,10 @@ class App:
 
 	def _load_subjects_marks(
 		self,
-		json_name: str,
-		user_id: str | None = None,
+		marks_path: Path,
+		user_id: str,
 	) -> None:
-		lessons_marks = self._json_parser.load_marks(json_name, user_id)
+		lessons_marks = self._json_parser.load_marks(marks_path, user_id)
 		subject_list = self._subject_list.subject_list
 		for subject in subject_list:
 			marks = lessons_marks.get(subject.name, [])
@@ -125,9 +144,10 @@ class App:
 
 	def _load_subjects_homeworks(
 		self,
-		json_name: str,
+		homeworks_path: Path,
 	) -> None:
-		dict_homeworks = self._json_parser.load_homework(json_name)
+		# NOT WORKING, FUNC IN JSON PARSER HAS BEEN REWRITED
+		dict_homeworks = self._json_parser.load_homeworks(homeworks_path)
 		subjects = self._subject_list.subject_list
 		for subject in subjects:
 			subject_name = subject.name

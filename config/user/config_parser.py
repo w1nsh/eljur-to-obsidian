@@ -16,7 +16,7 @@ class ConfigParser:
 		self,
 		base_dir: Path,
 		paths_file: Path,
-		encoding: str = 'utf-8',
+		encoding: str,
 	) -> None:
 		self._base_dir = base_dir
 		self._paths_file = paths_file
@@ -96,12 +96,12 @@ class ConfigParser:
 		devkey = getenv('ELJUR_DEVKEY')
 		auth_token = getenv('ELJUR_AUTH_TOKEN')
 		user_eljur_config = UserEljurConfig(
-			login,
-			password,
-			school_class,
-			vendor,
-			devkey,
-			auth_token,
+			login if login else '',
+			password if password else '',
+			school_class if school_class else '',
+			vendor if vendor else '',
+			devkey if devkey else '',
+			auth_token if auth_token else '',
 		)
 		return user_eljur_config
 
