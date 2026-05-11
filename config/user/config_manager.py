@@ -33,7 +33,7 @@ class ConfigManager:
 		)
 		self.writer = ConfigWriter(
 			encoding,
-			)
+		)
 
 
 	def load_config(

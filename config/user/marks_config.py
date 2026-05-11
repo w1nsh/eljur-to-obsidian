@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from config.user.desired_mark import DesiredMark
-
 
 @dataclass
 class MarksConfig:
@@ -25,7 +23,6 @@ class MarksConfig:
 	path: Path
 	from_date: str
 	to_date: str
-	subjects: list[DesiredMark]
 
 	
 	def set_need(
@@ -78,21 +75,3 @@ class MarksConfig:
 			to_date (str): New date end of the range.
 		"""
 		self.to_date = to_date
-
-
-	def set_desired_mark(
-		self,
-		subject_name: str,
-		desired_mark: int,
-	) -> None:
-		"""
-		Sets desired mark for a selected subject by subject name.
-
-		Args:
-			subject_name (str): Subject name for a search subject.
-			desired_mark (int): New desired mark of the subject.
-		"""
-		for subject in self.subjects:
-			if subject.subject_name == subject_name:
-				subject.set_desired_mark(desired_mark)
-				break

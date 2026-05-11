@@ -6,9 +6,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from config.user.config import UserDataConfig, UserEljurConfig
-from config.user.marks_config import MarksConfig, DesiredMark
+from config.user.marks_config import MarksConfig
 from config.user.homeworks_config import HomeworksConfig
 from config.paths.paths import Paths, SettingsPaths, ResponsesPaths
+from config.paths.auxiliary.auxiliary_paths import AuxiliaryPaths
+from config.paths.auxiliary.md_auxiliary_paths import MdAuxiliaryPaths
+from config.paths.auxiliary.homeworks_paths import HomeworksPaths
+from config.paths.auxiliary.marks_paths import MarksPaths
 
 
 class ConfigParser:
@@ -16,10 +20,7 @@ class ConfigParser:
 	Class for parsing config files and loading data from them.
 	
 	Attributes:
-		_base_dir (Path): base directory of the project.
-		_paths_path (Path): path to the file with paths.
-		_encoding (str): encoding for reading files.
-		_paths (Paths): paths to all technical files and directories used in the project.
+		_encoding (str): Encoding for reading files.
 	"""
 
 	def __init__(
@@ -40,15 +41,20 @@ class ConfigParser:
 		All paths is relative to the base directory of the project.
 
 		Args:
-			base_dir (Path): base directory of the project.
-			paths_path (Path): relative path to the file with paths.
+			base_dir (Path): Base directory of the project.
+			paths_path (Path): Relative path to the file with paths.
 
 		Returns:
-			Paths: paths to all technical files of the project.
+			Paths: Paths to all technical files of the project.
 		"""
 		paths_dict = self._load_json(base_dir / paths_path)
+		auxiliary_paths_dict = paths_dict['auxiliary']
 		settings_paths_dict = paths_dict['settings']
 		responses_paths_dict = paths_dict['responses']
+		axiliary_paths = self._load_auxiliary_paths(
+			base_dir=base_dir,
+			auxiliary_paths=auxiliary_paths_dict,
+		)
 		settings_paths = SettingsPaths(
 			env=base_dir / settings_paths_dict['env'],
 			config=base_dir / settings_paths_dict['config'],
@@ -62,12 +68,12 @@ class ConfigParser:
 			rules=base_dir / responses_paths_dict['rules'],
 			schedule=base_dir / responses_paths_dict['schedule'],
 		)
-		self._paths = Paths(
+		return Paths(
+			auxiliary=axiliary_paths,
 			settings=settings_paths,
 			responses=responses_paths,
 			base_dir=base_dir,
 		)
-		return self._paths
 
 
 	def load_user_data_config(
@@ -78,10 +84,10 @@ class ConfigParser:
 		Loads user data config. Create a UserDataConfig dataclass.
 
 		Args:
-			config_path (Path): absolute path to the user data config file.
+			config_path (Path): Absolute path to the user data config file.
 
 		Returns:
-			UserDataConfig: user data configuration.
+			UserDataConfig: User data configuration.
 		"""
 		user_config_dict = self._load_json(config_path)
 		marks_config_dict = user_config_dict['marks']
@@ -91,13 +97,6 @@ class ConfigParser:
 			path=marks_config_dict['path'],
 			from_date=marks_config_dict['from'],
 			to_date=marks_config_dict['to'],
-			subjects=[
-				DesiredMark(
-					subject_name=subject_dict['name'],
-					desired_mark=subject_dict['desired_mark']
-				)
-				for subject_dict in marks_config_dict['subjects']
-			]
 		)
 		homeworks_config = HomeworksConfig(
 			need=homeworks_config_dict['need'],
@@ -120,10 +119,10 @@ class ConfigParser:
 		Loads user Eljur config. Create a UserEljurConfig dataclass.
 
 		Args:
-			env_path (Path): absolute path to the .env config file.
+			env_path (Path): Absolute path to the .env config file.
 		
 		Returns:
-			UserEljurConfig: user Eljur configuration.
+			UserEljurConfig: User Eljur configuration.
 		"""
 		if env_path.exists():
 			load_dotenv(env_path)
@@ -149,6 +148,36 @@ class ConfigParser:
 			auth_token if auth_token else '',
 		)
 		return user_eljur_config
+
+
+	def _load_auxiliary_paths(
+		self,
+		base_dir: Path,
+		auxiliary_paths: dict,
+	) -> AuxiliaryPaths:
+		"""
+		Loads auxiliary paths from dict, and return it.
+
+		Args:
+			base_dir (Path): Base directory of the project.
+			auxiliary_paths (dict): Auxiliary paths dictionary.
+
+		Returns:
+			AuxiliaryPaths: Paths to auxiliary files.
+		"""
+		return AuxiliaryPaths(
+			desired_marks=base_dir / auxiliary_paths['desired_marks'],
+			md=MdAuxiliaryPaths(
+				homeworks=HomeworksPaths(
+					starts_with=base_dir / auxiliary_paths['md']['homeworks']['starts_with'],
+					ends_with=base_dir / auxiliary_paths['md']['homeworks']['ends_with'],
+				),
+				marks=MarksPaths(
+					starts_with=base_dir / auxiliary_paths['md']['marks']['starts_with'],
+					ends_with=base_dir / auxiliary_paths['md']['marks']['ends_with'],
+				),
+			),
+		)
 
 
 	def _load_json(

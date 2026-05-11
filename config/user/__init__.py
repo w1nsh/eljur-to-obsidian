@@ -2,7 +2,6 @@ from .config_manager import ConfigManager
 from .config_parser import ConfigParser
 from .config_writer import ConfigWriter
 from .config import Config
-from .desired_mark import DesiredMark
 from .homeworks_config import HomeworksConfig
 from .marks_config import MarksConfig
 from .user_data_config import UserDataConfig

@@ -11,5 +11,18 @@
 		"periods": "responses/periods.json",
 		"rules": "responses/rules.json",
 		"schedule": "responses/schedule.json"
+	},
+	"auxiliary": {
+		"desired_marks": "auxiliary/desired_marks.json",
+		"md": {
+			"homeworks": {
+				"starts_with": "auxiliary/homeworks/starts_with.md",
+				"ends_with":"auxiliary/homeworks/ends_with.md"
+			},
+			"marks": {
+				"starts_with": "auxiliary/marks/starts_with.md",
+				"ends_with":"auxiliary/marks/ends_with.md"
+			}
+		}
 	}
 }

@@ -3,13 +3,7 @@
 		"need": true,
 		"path": "C:/Users/anton/Documents/Main/Школьное/marks_test.md",
 		"from": "12.01.2026",
-		"to": "08.03.2026",
-		"subjects": [
-			{
-				"name": "Алгебра",
-				"desired_mark": 5
-			}
-		]
+		"to": "08.03.2026"
 	},
 	"homeworks": {
 		"need": true,
