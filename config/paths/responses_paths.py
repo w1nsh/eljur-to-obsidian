@@ -20,7 +20,7 @@ class ResponsesPaths:
 	"""
 	assessments: Path
 	diary: Path
-	homework: Path
+	homeworks: Path
 	marks: Path
 	periods: Path
 	rules: Path

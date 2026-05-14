@@ -20,6 +20,12 @@ class AuxiliaryParser:
 		self,
 		encoding: str
 	) -> None:
+		"""
+		Initialize AuxiliaryParser object.
+
+		Args:
+			encoding (str): Encoding for reading files.
+		"""
 		self._encoding = encoding
 
 
@@ -34,7 +40,7 @@ class AuxiliaryParser:
 		"""
 		Loads auxiliary data.
 
-		Attributes:
+		Args:
 			desired_marks (Path): Path to the desired marks file.
 			homeworks_starts_with (Path): Path to the homeworks starts with file.
 			homeworks_ends_with (Path): Path to the homeworks ends with file.
@@ -67,7 +73,7 @@ class AuxiliaryParser:
 		"""
 		Loads md auxiliary data.
 
-		Attributes:
+		Args:
 			homeworks_starts_with (Path): Path to the homeworks starts with file.
 			homeworks_ends_with (Path): Path to the homeworks ends with file.
 			marks_starts_with (Path): Path to the marks starts with file.
@@ -96,7 +102,7 @@ class AuxiliaryParser:
 		"""
 		Loads marks auxiliary data.
 
-		Attributes:
+		Args:
 			starts_with (Path): Path to the starts with file.
 			ends_with (Path): Path to the ends with file.
 			
@@ -121,7 +127,7 @@ class AuxiliaryParser:
 		"""
 		Loads homeworks auxiliary data.
 
-		Attributes:
+		Args:
 			starts_with (Path): Path to the starts with file.
 			ends_with (Path): Path to the ends with file.
 

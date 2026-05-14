@@ -2,54 +2,61 @@ from pathlib import Path
 from typing import Any
 import json
 
-from config.user.user_eljur_config import UserEljurConfig
-
 
 class ConfigWriter:
 	"""
 	Class for writing data to config files.
 
 	Attributes:
-		_encoding (str): encoding for writing files.
+		_encoding (str): Encoding for writing files.
 	"""
 
 	def __init__(
 		self,
 		encoding: str,
 	) -> None:
+		"""
+		Initializes ConfigWriter object.
+
+		Args:
+			encoding (str): Encofing for writing files.
+		"""
 		self._encoding = encoding
 
 
 	def write_env(
 		self,
-		env_path: Path,
-		env_content: str,
+		env: Path,
+		content: str,
 	) -> None:
 		"""
 		Writes data to the .env config file.
 
 		Args:
-			env_path (Path): path to the .env config file.
-			env_content (str): content to write to the .env config file.
+			env (Path): Path to the .env config file.
+			content (str): Content to write to the .env config file.
 		"""
-		env_path.write_text(env_content, encoding=self._encoding)
+		env.write_text(
+			content,
+			encoding=self._encoding,
+		)
 
 
 	def write_config(
 		self,
-		config_path: Path,
-		config_content: dict[str, Any],
+		config: Path,
+		content: dict[str, Any],
 	) -> None:
 		"""
 		Writes data to the config file.
 
 		Args:
-			config_path (Path): absolute path to the config file.
-			config_content (dict[str, Any]): content to write to the config file.
+			config (Path): Absolute path to the config file.
+			content (dict[str, Any]): Content to write to the config file.
 		"""
 		json_string = json.dumps(
-			config_content,
+			content,
 			indent=4,
 			ensure_ascii=False
 		)
-		config_path.write_text(json_string, encoding=self._encoding)
+		config.write_text(json_string, encoding=self._encoding)

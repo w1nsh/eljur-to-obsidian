@@ -6,7 +6,7 @@
 	"responses": {
 		"assessments": "responses/assessments.json",
 		"diary": "responses/diary.json",
-		"homework": "responses/homeworks.json",
+		"homeworks": "responses/homeworks.json",
 		"marks": "responses/marks.json",
 		"periods": "responses/periods.json",
 		"rules": "responses/rules.json",

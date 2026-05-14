@@ -11,12 +11,12 @@ class ConfigManager:
 	Class for managing config data.
 
 	Attributes:
-		parser (ConfigParser): config parser for loading data from config files.
-		writer (ConfigWriter): config writer for writing data to config files.
-		_base_dir (Path): base directory of the project.
-		_paths_path (Path): path to the file with technical paths.
-		_encoding (str): encoding for reading and writing files.
-		_config (Config): configuration dataclass.
+		parser (ConfigParser):
+			Config parser for loading data from config files.
+		writer (ConfigWriter):
+			Config writer for writing data to config files.
+		config (Config): Configuration dataclass.
+		_encoding (str): Encoding for reading and writing files.
 	"""
 
 	def __init__(
@@ -25,8 +25,16 @@ class ConfigManager:
 		paths_path: Path,
 		encoding: str,
 	) -> None:
-		self._base_dir = base_dir
-		self._paths_path = paths_path
+		"""
+		Initializes ConfigManager object.
+
+		Loads Config during initialization.
+
+		Args:
+			base_dir (Path): Base directory of the project.
+			paths_path (Path): Path to the file with technical paths.
+			encoding (str): Encofing for reading and writing files.
+		"""
 		self._encoding = encoding
 		self.parser = ConfigParser(
 			encoding,
@@ -34,33 +42,9 @@ class ConfigManager:
 		self.writer = ConfigWriter(
 			encoding,
 		)
-
-
-	def load_config(
-		self,
-	) -> None:
-		"""
-		Load config.
-
-		Load config, store it in `self._config`, and return it.
-
-		Returns:
-			Config: configuration dataclass.
-		"""
-		paths = self.parser.load_paths(
-			base_dir=self._base_dir,
-			paths_path=self._paths_path,
-		)
-		user_data_config = self.parser.load_user_data_config(
-			config_path=paths.settings.config,
-		) # add validate to all parameters
-		user_eljur_config = self.parser.load_user_eljur_config(
-			env_path=paths.settings.env,
-		) # add validate to exists
-		self._config = Config(
-			paths=paths,
-			user_data=user_data_config,
-			user_eljur=user_eljur_config,
+		self.config = self.parser.load_config(
+			base_dir=base_dir,
+			paths_path=paths_path,
 		)
 
 
@@ -68,29 +52,29 @@ class ConfigManager:
 		self,
 	) -> Config:
 		"""
-		Get config.
+		Gets config.
 
-		Get config from `self._config` and return it.
+		Gets config from `self.config` and returns it.
 		Use only after calling `load_config` method.
 
 		Returns:
 			Config: configuration dataclass.
 		"""
-		return self._config
+		return self.config
 
 
 	def write_env(
 		self,
 	) -> None:
 		"""
-		Write data to the .env config file.
+		Writes data to the .env config file.
 		"""
-		env_content = self._generate_env(
-			self._config.user_eljur,
+		content = self._generate_env(
+			self.config.user_eljur,
 		)
 		self.writer.write_env(
-			env_path=self._config.paths.settings.env,
-			env_content=env_content,
+			self.config.paths.settings.env,
+			content,
 		)
 
 
@@ -98,14 +82,14 @@ class ConfigManager:
 		self,
 	) -> None:
 		"""
-		Write data to the user config file.
+		Writes data to the user config file.
 		"""
 		config_content = self._generate_config_content(
-			self._config.user_data,
+			self.config.user_data,
 		)
 		self.writer.write_config(
-			config_path=self._config.paths.settings.config,
-			config_content=config_content,
+			self.config.paths.settings.config,
+			config_content,
 		)
 
 
@@ -117,10 +101,11 @@ class ConfigManager:
 		Generates content for the user config file.
 
 		Args:
-			user_data_config (UserDataConfig): user data configuration.
+			user_data_config (UserDataConfig):
+				User data configuration.
 
 		Returns:
-			dict[str, Any]: content for the user config file.
+			dict[str, Any]: Content for the user config file.
 		"""
 		return {
 			"marks": {
@@ -144,16 +129,20 @@ class ConfigManager:
 	) -> str:
 		"""
 		Generates content for the .env config file.
+
+		Args:
+			user_eljur_config (UserEljurConfig):
+				User Eljur configuration.
 		
 		Returns:
-			str: content for the .env config file.
+			str: Content for the .env config file.
 				Contains data for logging in Eljur.
 		"""
-		env_content = ''
-		env_content += f'ELJUR_LOGIN={user_eljur_config.login}\n'
-		env_content += f'ELJUR_PASSWORD={user_eljur_config.password}\n'
-		env_content += f'ELJUR_SCHOOL_CLASS={user_eljur_config.school_class}\n'
-		env_content += f'ELJUR_VENDOR={user_eljur_config.vendor}\n'
-		env_content += f'ELJUR_DEVKEY={user_eljur_config.devkey}\n'
-		env_content += f'ELJUR_AUTH_TOKEN={user_eljur_config.auth_token}\n'
-		return env_content
+		content = ''
+		content += f'ELJUR_LOGIN={user_eljur_config.login}\n'
+		content += f'ELJUR_PASSWORD={user_eljur_config.password}\n'
+		content += f'ELJUR_SCHOOL_CLASS={user_eljur_config.school_class}\n'
+		content += f'ELJUR_VENDOR={user_eljur_config.vendor}\n'
+		content += f'ELJUR_DEVKEY={user_eljur_config.devkey}\n'
+		content += f'ELJUR_AUTH_TOKEN={user_eljur_config.auth_token}\n'
+		return content

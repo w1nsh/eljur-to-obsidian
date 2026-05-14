@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from config.user.config import UserDataConfig, UserEljurConfig
+from config.user.config import UserDataConfig, UserEljurConfig, Config
 from config.user.marks_config import MarksConfig
 from config.user.homeworks_config import HomeworksConfig
 from config.paths.paths import Paths, SettingsPaths, ResponsesPaths
@@ -27,7 +27,45 @@ class ConfigParser:
 		self,
 		encoding: str,
 	) -> None:
+		"""
+		Initializes ConfigParser object.
+
+		Args:
+			encoding (str): Encofing for reading files.
+		"""
 		self._encoding = encoding
+
+
+	def load_config(
+		self,
+		base_dir: Path,
+		paths_path: Path,
+	) -> Config:
+		"""
+		Loads config.
+
+		Loads config and returns it.
+
+		Args:
+			base_dir (Path): Base directory of the project.
+			paths_path (Path): Path to the file with technical paths.
+
+		Returns:
+			Config: Configuration dataclass.
+		"""
+		paths = self.load_paths(
+				base_dir=base_dir,
+				paths_path=paths_path,
+			)
+		return Config(
+			paths=paths,
+			user_data=self.load_user_config(
+				paths.settings.config,
+			),
+			user_eljur=self.load_eljur_config(
+				paths.settings.env,
+			)
+		)
 
 
 	def load_paths(
@@ -47,79 +85,73 @@ class ConfigParser:
 		Returns:
 			Paths: Paths to all technical files of the project.
 		"""
-		paths_dict = self._load_json(base_dir / paths_path)
-		auxiliary_paths_dict = paths_dict['auxiliary']
-		settings_paths_dict = paths_dict['settings']
-		responses_paths_dict = paths_dict['responses']
-		axiliary_paths = self._load_auxiliary_paths(
+		paths = self._load_json(base_dir / paths_path)
+		auxiliary_paths = paths['auxiliary']
+		settings_paths = paths['settings']
+		responses_paths = paths['responses']
+		axiliary = self._load_auxiliary_paths(
 			base_dir=base_dir,
-			auxiliary_paths=auxiliary_paths_dict,
+			auxiliary_paths=auxiliary_paths,
 		)
-		settings_paths = SettingsPaths(
-			env=base_dir / settings_paths_dict['env'],
-			config=base_dir / settings_paths_dict['config'],
+		settings = self._load_settings_paths(
+			base_dir=base_dir,
+			settings_paths=settings_paths,
 		)
-		responses_paths = ResponsesPaths(
-			assessments=base_dir / responses_paths_dict['assessments'],
-			diary=base_dir / responses_paths_dict['diary'],
-			homework=base_dir / responses_paths_dict['homework'],
-			marks=base_dir / responses_paths_dict['marks'],
-			periods=base_dir / responses_paths_dict['periods'],
-			rules=base_dir / responses_paths_dict['rules'],
-			schedule=base_dir / responses_paths_dict['schedule'],
+		responses = self._load_responses_paths(
+			base_dir=base_dir,
+			responses_paths=responses_paths,
 		)
 		return Paths(
-			auxiliary=axiliary_paths,
-			settings=settings_paths,
-			responses=responses_paths,
+			auxiliary=axiliary,
+			settings=settings,
+			responses=responses,
 			base_dir=base_dir,
 		)
 
 
-	def load_user_data_config(
+	def load_user_config(
 		self,
 		config_path: Path,
 	) -> UserDataConfig:
 		"""
-		Loads user data config. Create a UserDataConfig dataclass.
+		Loads user data config.
+		
+		Creates a UserDataConfig dataclass.
 
 		Args:
-			config_path (Path): Absolute path to the user data config file.
+			config_path (Path):
+				Absolute path to the user data config file.
 
 		Returns:
 			UserDataConfig: User data configuration.
 		"""
-		user_config_dict = self._load_json(config_path)
-		marks_config_dict = user_config_dict['marks']
-		homeworks_config_dict = user_config_dict['homeworks']
-		marks_config = MarksConfig(
-			need=marks_config_dict['need'],
-			path=marks_config_dict['path'],
-			from_date=marks_config_dict['from'],
-			to_date=marks_config_dict['to'],
+		user_config = self._load_json(config_path)
+		marks = user_config['marks']
+		homeworks = user_config['homeworks']
+		marks_config = self._load_marks_config(
+			marks_config=marks,
 		)
-		homeworks_config = HomeworksConfig(
-			need=homeworks_config_dict['need'],
-			path=homeworks_config_dict['path'],
-			from_date=homeworks_config_dict['from'],
-			to_date=homeworks_config_dict['to']
+		homeworks_config = self._load_homeworks_config(
+			homeworks_config=homeworks,
 		)
-		user_data_config = UserDataConfig(
+		return UserDataConfig(
 			marks=marks_config,
 			homeworks=homeworks_config
 		)
-		return user_data_config
 
 
-	def load_user_eljur_config(
+	def load_eljur_config(
 		self,
 		env_path: Path,
 	) -> UserEljurConfig:
 		"""
-		Loads user Eljur config. Create a UserEljurConfig dataclass.
+		Loads user Eljur config.
+		
+		Creates a UserEljurConfig dataclass.
 
 		Args:
-			env_path (Path): Absolute path to the .env config file.
+			env_path (Path):
+				Absolute path to the .env config file.
 		
 		Returns:
 			UserEljurConfig: User Eljur configuration.
@@ -139,7 +171,7 @@ class ConfigParser:
 			vendor = None
 			devkey = None
 			auth_token = None
-		user_eljur_config = UserEljurConfig(
+		return UserEljurConfig(
 			login if login else '',
 			password if password else '',
 			school_class if school_class else '',
@@ -147,16 +179,15 @@ class ConfigParser:
 			devkey if devkey else '',
 			auth_token if auth_token else '',
 		)
-		return user_eljur_config
 
 
 	def _load_auxiliary_paths(
 		self,
 		base_dir: Path,
-		auxiliary_paths: dict,
+		auxiliary_paths: dict[str, Any],
 	) -> AuxiliaryPaths:
 		"""
-		Loads auxiliary paths from dict, and return it.
+		Loads auxiliary paths from dict, and returns it.
 
 		Args:
 			base_dir (Path): Base directory of the project.
@@ -178,6 +209,95 @@ class ConfigParser:
 				),
 			),
 		)
+	
+
+	def _load_settings_paths(
+		self,
+		base_dir: Path,
+		settings_paths: dict[str, Any],
+	) -> SettingsPaths:
+		"""
+		Loads settings paths from dict, and returns it.
+
+		Args:
+			base_dir (Path): Base directory of the project.
+			settings_paths (dict): Settings paths dictionary.
+
+		Returns:
+			SettingsPaths: Paths to settings files.
+		"""
+		return SettingsPaths(
+			env=base_dir / settings_paths['env'],
+			config=base_dir / settings_paths['config'],
+		)
+
+
+	def _load_responses_paths(
+		self,
+		base_dir: Path,
+		responses_paths: dict[str, Any],
+	) -> ResponsesPaths:
+		"""
+		Loads responses paths from dict, and returns it.
+
+		Args:
+			base_dir (Path): Base directory of the project.
+			responses_paths (dict): Responses paths dictionary.
+
+		Returns:
+			ResponsesPaths: Paths to responses files.
+		"""
+		return ResponsesPaths(
+			assessments=base_dir / responses_paths['assessments'],
+			diary=base_dir / responses_paths['diary'],
+			homeworks=base_dir / responses_paths['homeworks'],
+			marks=base_dir / responses_paths['marks'],
+			periods=base_dir / responses_paths['periods'],
+			rules=base_dir / responses_paths['rules'],
+			schedule=base_dir / responses_paths['schedule'],
+		)
+
+
+	def _load_marks_config(
+		self,
+		marks_config: dict[str, Any],
+	) -> MarksConfig:
+		"""
+		Loads marks config from dict, and returns it as MarksConfig.
+
+		Args:
+			marks_config (dict[str, Any]): Marks config dictionary.
+
+		Returns:
+			MarksConfig: Marks user configuration.
+		"""
+		return MarksConfig(
+			need=marks_config['need'],
+			path=marks_config['path'],
+			from_date=marks_config['from'],
+			to_date=marks_config['to'],
+		)
+
+
+	def _load_homeworks_config(
+		self,
+		homeworks_config: dict[str, Any],
+	) -> HomeworksConfig:
+		"""
+		Loads homeworks config from dict, and returns it as HomeworksConfig.
+
+		Args:
+			homeworks_config (dict[str, Any]): Homeworks config dictionary.
+
+		Returns:
+			HomeworksConfig: Homeworks user configuration.
+		"""
+		return HomeworksConfig(
+			need=homeworks_config['need'],
+			path=homeworks_config['path'],
+			from_date=homeworks_config['from'],
+			to_date=homeworks_config['to'],
+		)
 
 
 	def _load_json(
@@ -188,10 +308,10 @@ class ConfigParser:
 		Loads json file and returns it as a dictionary.
 
 		Args:
-			path (Path): absolute path to the json file.
+			path (Path): Absolute path to the json file.
 
 		Returns:
-			dict[str, Any]: content of the json file as a dictionary.
+			dict[str, Any]: Content of the json file as a dictionary.
 		"""
 		json_string = path.read_text(encoding=self._encoding)
 		json_dict = json.loads(json_string)
