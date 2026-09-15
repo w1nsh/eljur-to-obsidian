@@ -4,8 +4,8 @@
 			"need": true,
 			"path": "C:/Users/anton/Documents/Main/Школьное/Оценки.md",
 			"date": {
-				"start": "12.01.2026",
-				"end": "08.03.2026"
+				"start": "01.09.2026",
+				"end": "16.09.2026"
 			},
 			"template": {
 				"starts_with": "config/marks/starts_with.md",

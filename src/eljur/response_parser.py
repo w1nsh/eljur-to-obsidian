@@ -2,11 +2,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from eljur.homework_file import HomeworkFile
-from eljur.homework import Homework
-from eljur.mark_list import MarkList
-from eljur.subject import Subject
-from eljur.student import Student
+from src.eljur.homework_file import HomeworkFile
+from src.eljur.homework import Homework
+from src.eljur.mark_list import MarkList
+from src.eljur.subject import Subject
+from src.eljur.student import Student
 from src.eljur.period import Period
 from src.utils.date import Date
 
@@ -138,7 +138,7 @@ class ResponseParser:
 
 		Args:
 			marks (Path): Path to the marks file.
-			user_id (str): User if for correct load marks.
+			user_id (str): User id for correct load marks.
 			subject_list (list[Subject]): Subject list.
 		Returns:
 			list[Subject]: Subject list with marks.
@@ -146,7 +146,7 @@ class ResponseParser:
 		marks_data = self._read_json(
 			marks,
 		)
-		student = marks_data['response']['result']['students'][user_id]
+		student = marks_data['response']['result']['students'][user_id] # типа user_id
 		lessons = student['lessons']
 		for lesson in lessons:
 			lesson_name = lesson['name']
@@ -157,7 +157,7 @@ class ResponseParser:
 					mark_value = mark['convert']
 					mark_list.append(mark_value)
 			for subject in subject_list:
-				if subject == lesson_name:
+				if subject.name == lesson_name:
 					subject.marks = MarkList(
 						mark_list,
 					)
@@ -185,7 +185,7 @@ class ResponseParser:
 		marks_data = self._read_json(
 			marks,
 		)
-		student = marks_data['response']['result']['students'][user_id]
+		student = marks_data['response']['result']['students'][user_id] # типа user_id
 		lessons = student['lessons']
 		for lesson in lessons:
 			subject = Subject(

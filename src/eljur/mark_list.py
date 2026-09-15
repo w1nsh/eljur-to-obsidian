@@ -15,7 +15,7 @@ class MarkList:
 
 	def average(
 		self,
-		marks: list[int],
+		marks: list[int] | None = None,
 	) -> float:
 		"""
 		Calculates average value of the marks.
@@ -28,7 +28,10 @@ class MarkList:
 			float: Average value.
 		"""
 		if not marks:
-			marks = self.marks.copy()
+			if self.marks:
+				marks = self.marks.copy()
+			else:
+				return 0
 		avg = sum(marks) / len(marks)
 		return avg
 	
@@ -48,6 +51,8 @@ class MarkList:
 		Returns:
 			int: Count of the concrete marks.
 		"""
+		if not desired_mark:
+			return 0
 		if mark < desired_mark:
 			return 0
 		count = 0

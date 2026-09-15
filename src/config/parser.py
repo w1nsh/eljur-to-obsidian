@@ -141,7 +141,6 @@ class ConfigParser:
 		self,
 		program: dict[str, Any],
 	) -> ProgramConfig:
-		encoding = program['encoding']
 		env = self._eto / program['env']
 		responses = self._responses(
 			program['responses'],

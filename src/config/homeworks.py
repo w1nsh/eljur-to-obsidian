@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from config.dates import DatesConfig
+from src.config.dates import DatesConfig
 from src.config.templates import TemplatesConfig
 
 

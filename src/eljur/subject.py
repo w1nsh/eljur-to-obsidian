@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
-from eljur.mark_list import MarkList
-from eljur.homework import Homework
+from src.eljur.mark_list import MarkList
+from src.eljur.homework import Homework
 
 
 @dataclass

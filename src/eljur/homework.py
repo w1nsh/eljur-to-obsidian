@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from eljur.homework_file import HomeworkFile
+from src.eljur.homework_file import HomeworkFile
 
 
 @dataclass

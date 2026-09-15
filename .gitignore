@@ -2,5 +2,5 @@
 !/responses/.gitkeep
 .env
 /venv/
-**/__pycache__/
-/test*
+__pycache__/
+test/
