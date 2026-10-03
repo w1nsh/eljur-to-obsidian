@@ -10,8 +10,9 @@ class Md:
 
 	def __init__(
 		self,
+		encoding: str,
 	) -> None:
-		pass
+		self._encoding = encoding
 
 
 	def marks(
@@ -26,16 +27,15 @@ class Md:
 			md += f'- {subject.name}\n'
 			md += f'	- Average: {subject.marks.average()}\n'
 			md += f'	- Desired: {subject.desired_mark}\n'
-			md += f'		- For Desired:\n'
-			md += f'			- 5: {subject.marks.count_marks_for_desired(5, subject.desired_mark)}\n'
-			md += f'			- 4: {subject.marks.count_marks_for_desired(4, subject.desired_mark)}\n'
-			md += f'			- 3: {subject.marks.count_marks_for_desired(3, subject.desired_mark)}\n'
-			md += f'		- For Current:\n'
-			md += f'			- 5: {subject.marks.count_neutral_for_current(5)}\n'
-			md += f'			- 4: {subject.marks.count_neutral_for_current(4)}\n'
-			md += f'			- 3: {subject.marks.count_neutral_for_current(3)}\n'
-			md += f'			- 2: {subject.marks.count_neutral_for_current(2)}\n'
-			if subject.name == 'Химия':
-				print(subject.marks.marks)
+			md += f'		- For Desired (does affect):\n'
+			md += f'			- "5": {subject.marks.count_marks_for_desired(5, subject.desired_mark)}\n'
+			md += f'			- "4": {subject.marks.count_marks_for_desired(4, subject.desired_mark)}\n'
+			md += f'			- "3": {subject.marks.count_marks_for_desired(3, subject.desired_mark)}\n'
+			md += f'			- "2": {subject.marks.count_marks_for_desired(2, subject.desired_mark)}\n'
+			md += f'		- For Current (doesn`t affect):\n'
+			md += f'			- "5": {subject.marks.count_neutral_for_current(5)}\n'
+			md += f'			- "4": {subject.marks.count_neutral_for_current(4)}\n'
+			md += f'			- "3": {subject.marks.count_neutral_for_current(3)}\n'
+			md += f'			- "2": {subject.marks.count_neutral_for_current(2)}\n'
 		md += ends_with + '\n'
-		marks.write_text(md, encoding='utf-8')
+		marks.write_text(md, encoding=self._encoding)

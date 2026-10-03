@@ -45,24 +45,30 @@ class MarkList:
 		Calculate count of the concrete mark to for desired marks.
 
 		Args:
-			mark (int): Concrete mark.
+			mark (int): Specific mark.
 			desired_mark (int): Desired mark.
 
 		Returns:
-			int: Count of the concrete marks.
+			int: Count of the specific marks.
 		"""
 		if not desired_mark:
 			return 0
-		if mark < desired_mark:
-			return 0
+		min_need_mark = desired_mark - 0.5
 		count = 0
 		marks = self.marks.copy()
 		avg = self.average(marks)
-		min_need_mark = desired_mark - 0.5
-		while avg < min_need_mark:
-			count += 1
-			marks.append(mark)
-			avg = self.average(marks)
+		if min_need_mark < mark < desired_mark:
+			while avg > min_need_mark:
+				count += 1
+				marks.append(mark)
+				avg = self.average(marks)
+		elif mark < min_need_mark:
+			return 0
+		else:
+			while avg < min_need_mark:
+				count += 1
+				marks.append(mark)
+				avg = self.average(marks)
 		return count
 	
 
@@ -75,10 +81,10 @@ class MarkList:
 		without affecting to the current mark.
 
 		Args:
-			mark (int): Concrete mark.
+			mark (int): Specific mark.
 		
 		Returns:
-			int: Count of the concrete mark.
+			int: Count of the specific mark.
 		"""
 		count = -1
 		marks = self.marks.copy()
